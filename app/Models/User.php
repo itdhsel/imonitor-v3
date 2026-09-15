@@ -2,31 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // 1. Point to your legacy database table
+    protected $table = 'userlist';
+
+    // 2. Define your custom primary key
+    protected $primaryKey = 'login_id';
+
+    // 3. Disable timestamps since created_at/updated_at do not exist
+    public $timestamps = false;
+
+    // 4. Map the columns
+    protected $fillable = [
+        'login_username',
+        'name',
+        'login_pwd',
+        'current_session_id', 
+    ];
+
+    // 5. Tell Laravel which column stores the password
+    public function getAuthPasswordName()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return 'login_pwd';
     }
 }
