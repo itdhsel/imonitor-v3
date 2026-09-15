@@ -2,34 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    // 1. Point to your legacy database table
+    // 1. Tell Laravel the correct table name
     protected $table = 'userlist';
 
-    // 2. Define your custom primary key
+    // 2. Tell Laravel the primary key is login_id, not id
     protected $primaryKey = 'login_id';
 
-    // 3. Disable timestamps since created_at/updated_at do not exist
-    public $timestamps = false;
+    // 3. Disable standard created_at/updated_at timestamps
+    public $timestamps = false; 
 
-    // 4. Map the columns
+    // 4. Allow these columns to be filled during SSO login/creation
     protected $fillable = [
         'login_username',
         'name',
         'login_pwd',
-        'current_session_id', 
+        'role',
+        'login_stamp'
     ];
 
-    // 5. Tell Laravel which column stores the password
-    public function getAuthPasswordName()
+    // Tell Laravel which column is used for the password
+    public function getAuthPassword()
     {
-        return 'login_pwd';
+        return $this->login_pwd;
     }
 }
