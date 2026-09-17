@@ -10,9 +10,18 @@
     <div class="container-fluid mt-4">
         
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>iMonitor Dashboard</h2>
-            <!-- Button to trigger Add Modal -->
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">Add New Patient</button>
+            <div>
+                <h2>iMonitor Dashboard</h2>
+                <!-- Temporary Debug Info -->
+                <div class="text-muted small">
+                    <strong>Debug Info:</strong> Logged in as: {{ auth()->user()->login_username ?? 'Unknown' }} | Role: {{ auth()->user()->role ?? 'No Role' }}
+                </div>
+            </div>
+            
+            <!-- Button to trigger Add Modal (Admin & Pharmacy Only) -->
+            @if(auth()->check() && in_array(auth()->user()->role, ['admin', 'pharmacy']))
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">Add New Patient</button>
+            @endif
         </div>
         
         @if(session('success'))
@@ -78,15 +87,19 @@
                                 <td>{{ $patient->remarks }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <!-- Update Button -->
-                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ $patient->no }}">Update</button>
+                                        <!-- Update Button (Admin & Pharmacy Only) -->
+                                        @if(auth()->check() && in_array(auth()->user()->role, ['admin', 'pharmacy']))
+                                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ $patient->no }}">Update</button>
+                                        @endif
                                         
-                                        <!-- Delete Form -->
-                                        <form action="{{ route('monitor.destroy', $patient->no) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record? This action cannot be undone.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </form>
+                                        <!-- Delete Form (Strictly Admin Only) -->
+                                        @if(auth()->check() && auth()->user()->role === 'admin')
+                                            <form action="{{ route('monitor.destroy', $patient->no) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                                 </tr>

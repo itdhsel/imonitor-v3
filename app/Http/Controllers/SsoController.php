@@ -28,42 +28,55 @@ class SsoController extends Controller
             'token' => $token
         ]);
 
-        if ($response->successful() && $response->json('valid')) {
-            $ssoUser = $response->json('user');
+        $responseData = $response->json();
+
+        // 2. Foolproof check: If it has 'valid' and it is true, proceed!
+        if (is_array($responseData) && isset($responseData['valid']) && $responseData['valid'] == true) {
+            $ssoUser = $responseData['user'];
             
-            // 2. Safely extract username regardless of AD format
+            // Safely extract username regardless of AD format
             $rawIdentifier = $ssoUser['username'] ?? $ssoUser['email'] ?? 'unknown_user';
             $shortUsername = str_contains($rawIdentifier, '@') 
                 ? explode('@', $rawIdentifier)[0] 
                 : $rawIdentifier;
 
-            // Enforce max column length safety (truncate if longer than 30 chars)
             $shortUsername = substr($shortUsername, 0, 30);
 
-            // 3. Find the user, or create them if they are new
+            // Find the user, or create them if they are new
             $user = User::where('login_username', $shortUsername)->first();
 
             if (!$user) {
-                // BRAND NEW USER: Assign the default 'user' role
                 $user = User::create([
                     'login_username' => $shortUsername,
                     'name'           => $ssoUser['name'] ?? $shortUsername,
-                    'role'           => 'user', // Default lowest permission
+                    'role'           => 'user', 
                     'login_pwd'      => md5(Str::random(16)),
                     'login_stamp'    => now()
                 ]);
             } else {
-                // EXISTING USER: Update their timestamp/name, but PRESERVE their role
                 $user->update([
                     'name'        => $ssoUser['name'] ?? $shortUsername,
                     'login_stamp' => now()
                 ]);
             }
 
+            // ACTUALLY LOG THEM IN AND SET SESSION
+            Auth::login($user);
+                        
+            $request->session()->regenerate(); 
+
+            // Explicitly save the ID to bypass $fillable model restrictions
+            $user->current_session_id = $request->session()->getId();
+            $user->save();
+
+            // REDIRECT TO DASHBOARD
+            return redirect()->route('monitor.index');
+        }
+
         // Return direct error payload for debugging if validation fails
         return response()->json([
             'error' => 'SSO Validation Failed',
-            'sso_response' => $response->json()
+            'sso_response' => $responseData
         ], 403);
     }
 }
