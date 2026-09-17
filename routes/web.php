@@ -33,3 +33,5 @@ Route::get('/', function () {
 
 Route::get('/counselling', [App\Http\Controllers\ConsultingController::class, 'index'])->name('counselling.index');
 Route::post('/counselling', [App\Http\Controllers\ConsultingController::class, 'store'])->name('counselling.store');
+Route::get('/collection', [App\Http\Controllers\CollectionController::class, 'index'])->name('collection.index');
+Route::post('/collection/update', [App\Http\Controllers\CollectionController::class, 'store'])->name('collection.store');

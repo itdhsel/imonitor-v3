@@ -11,17 +11,7 @@
     <div class="d-flex">
         
         <!-- SIDEBAR -->
-        <div class="sidebar p-4 position-fixed">
-            <h4 class="mb-4 pb-3 border-bottom border-secondary fw-bold text-white tracking-wide">🏥 iMonitor v3</h4>
-            <ul class="nav flex-column gap-2 mt-4">
-                <li class="nav-item">
-                    <a class="nav-link rounded px-3 py-2" href="{{ route('monitor.index') }}">📊 Patient Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active rounded px-3 py-2" href="{{ route('counselling.index') }}">💊 Counselling Request</a>
-                </li>
-            </ul>
-        </div>
+        @include('partials.sidebar')
 
         <!-- MAIN CONTENT -->
         <div class="main-content d-flex flex-column min-vh-100" style="margin-left: 260px;">
