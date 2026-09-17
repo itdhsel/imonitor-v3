@@ -1,0 +1,135 @@
+/* Custom layout styles for iMonitor v3 */
+
+/* Sleek gradient sidebar with shadow */
+.sidebar { 
+    min-height: 100vh; 
+    width: 260px; 
+    background: linear-gradient(180deg, #112a46, #1a4a5e, #206a6b);
+    color: white;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.main-content { 
+    width: calc(100% - 260px); 
+    background-color: #f8f9fc; /* Soft modern gray background */
+}
+
+/* Sidebar navigation hover effects */
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+    border-left: 4px solid #0dcaf0;
+}
+
+.sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-left: 4px solid #0dcaf0;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Header styling */
+.top-header {
+    background-color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    z-index: 90;
+}
+
+/* Footer Styling */
+.main-footer {
+    background-color: #112a46; /* Deep dark blue to match the sidebar */
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #ffffff; /* White font */
+    margin-top: auto; /* Pushes the footer to the bottom of the screen */
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05); /* Adds a subtle shadow above the footer */
+}
+
+/* Scroll to Top Button */
+#scrollTopBtn {
+    display: none; /* Hidden by default */
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    background-color: #206a6b;
+    color: white;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+#scrollTopBtn:hover {
+    background-color: #112a46;
+    transform: translateY(-4px);
+}
+
+/* Custom Table Header to match image */
+.custom-table th {
+    background-color: #e9ecef !important;
+    color: #000;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Custom Status Colors */
+.status-received  { background-color: #ff8a93 !important; color: #000 !important; } /* Pink */
+.status-processing { background-color: #ffb74d !important; color: #000 !important; } /* Orange */
+.status-ready     { background-color: #aed581 !important; color: #000 !important; } /* Green */
+.status-collected { background-color: #4dd0e1 !important; color: #000 !important; } /* Blue */
+.status-completed { background-color: #ba68c8 !important; color: #fff !important; } /* Purple */
+
+/* Workflow Legend (Chevron Arrows) */
+.workflow-legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 3px;
+    flex-wrap: wrap;
+}
+
+.legend-step {
+    padding: 10px 15px 10px 25px;
+    color: #000;
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    /* This creates the arrow > shape */
+    clip-path: polygon(calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 15px 50%, 0 0);
+}
+
+.legend-step:first-child {
+    padding-left: 15px;
+    /* Flat on the left side */
+    clip-path: polygon(calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 0 50%, 0 0);
+}
+
+.legend-step:last-child {
+    /* Flat on the right side */
+    clip-path: polygon(100% 0, 100% 50%, 100% 100%, 0 100%, 15px 50%, 0 0);
+}

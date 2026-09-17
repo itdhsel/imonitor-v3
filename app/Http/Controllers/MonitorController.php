@@ -7,16 +7,30 @@ use App\Models\Patient;
 
 class MonitorController extends Controller
 {
-    // Display the main monitoring dashboard
-    public function index()
+    // Display the main monitoring dashboard with Range Filters
+    public function index(Request $request)
     {
-        // Fetch only 50 patients per page instead of ALL patients
-        $patients = Patient::orderBy('patient_stamp', 'desc')->paginate(50);
-        
+        $query = Patient::query(); 
+
+        // 1. Get Start and End Dates (Defaults to TODAY if empty)
+        $startDate = $request->input('start_date', date('Y-m-d'));
+        $endDate = $request->input('end_date', date('Y-m-d'));
+
+        // 2. Apply Date Range Filter
+        $query->whereBetween('date', [$startDate, $endDate]);
+
+        // 3. Apply Ward Dropdown Filter (Exact match instead of 'like')
+        if ($request->filled('ward')) {
+            $query->where('ward', $request->input('ward'));
+        }
+
+        // 4. Order by newest first, and paginate (50 per page)
+        $patients = $query->orderBy('patient_stamp', 'desc')->paginate(50);
+
         return view('monitor.index', compact('patients'));
     }
 
-    // Replace 2-insertprocess.php
+    // Insert new patient record
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -31,11 +45,8 @@ class MonitorController extends Controller
             'status' => 'required|string|max:35',
         ]);
 
-        // Provide default empty values for legacy columns that don't allow NULL
         $validatedData['remarks'] = '';
         $validatedData['takenby'] = '';
-        
-        // Use a default time like '00:00:00' for the time columns
         $validatedData['statusready'] = '00:00:00';
         $validatedData['statuscollected'] = '00:00:00';
 
@@ -44,7 +55,7 @@ class MonitorController extends Controller
         return redirect()->route('monitor.index')->with('success', 'Patient record added successfully.');
     }
 
-    // Replace 2-updateprocess.php
+    // Update patient status
     public function update(Request $request, $no)
     {
         $patient = Patient::findOrFail($no);
@@ -54,7 +65,6 @@ class MonitorController extends Controller
             'remarks' => 'nullable|string|max:100',
             'statusready' => 'nullable',
             'statuscollected' => 'nullable',
-            // Add other fields you typically update
         ]);
 
         $patient->update($validatedData);
@@ -62,7 +72,7 @@ class MonitorController extends Controller
         return redirect()->route('monitor.index')->with('success', 'Patient record updated successfully.');
     }
 
-    // Replace 2-deleteprocess.php (or equivalent)
+    // Delete patient record
     public function destroy($no)
     {
         $patient = Patient::findOrFail($no);

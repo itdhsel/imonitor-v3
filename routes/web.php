@@ -30,3 +30,6 @@ Route::get('/', function () {
     // Redirects the user back to your SSO login page
     return redirect('http://hsel-sso.ddev.site/login'); 
 })->name('login');
+
+Route::get('/counselling', [App\Http\Controllers\ConsultingController::class, 'index'])->name('counselling.index');
+Route::post('/counselling', [App\Http\Controllers\ConsultingController::class, 'store'])->name('counselling.store');
