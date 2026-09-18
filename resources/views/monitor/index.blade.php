@@ -264,11 +264,19 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="fw-bold">Patient Name</label>
-                                <input type="text" name="patient_name" class="form-control" required>
+                                <input type="text" name="patient_name" id="add_patient_name" class="form-control" placeholder="Patient Name">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="fw-bold">MRN</label>
-                                <input type="text" name="mrn" class="form-control" required>
+                                <div class="input-group">
+                                    <input type="text" name="mrn" id="add_mrn" class="form-control" placeholder="Enter MRN to search">
+                                    <button class="btn btn-primary" type="button" id="btn_search_mrn" title="Search Patient Name">
+                                        <!-- SVG Magnifying Glass Icon -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="fw-bold">Ward</label>
@@ -318,8 +326,8 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<!-- Bootstrap JS -->
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     
     <!-- Custom Scripts -->
     <script>
@@ -333,17 +341,19 @@
         // 2. Scroll to Top Button Logic
         let upButton = document.getElementById("scrollTopBtn");
 
-        window.onscroll = function() {
-            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-                upButton.style.display = "block";
-            } else {
-                upButton.style.display = "none";
-            }
-        };
+        if (upButton) {
+            window.onscroll = function() {
+                if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                    upButton.style.display = "block";
+                } else {
+                    upButton.style.display = "none";
+                }
+            };
 
-        upButton.onclick = function() {
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        };
+            upButton.onclick = function() {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            };
+        }
 
         // 3. Date Range "Today" Button Logic
         function setToday() {
@@ -356,6 +366,49 @@
             document.getElementById('start_date').value = todayString;
             document.getElementById('end_date').value = todayString;
         }
+
+        // 4. MRN Search with Magnifying Glass
+        document.addEventListener('DOMContentLoaded', function() {
+            let searchBtn = document.getElementById('btn_search_mrn');
+            let mrnInput = document.getElementById('add_mrn');
+            let nameInput = document.getElementById('add_patient_name');
+
+            if (searchBtn && mrnInput && nameInput) {
+                searchBtn.addEventListener('click', function() {
+                    let mrn = mrnInput.value.trim();
+                    
+                    if (mrn !== '') {
+                        let originalIcon = searchBtn.innerHTML;
+                        searchBtn.innerHTML = '⏳'; 
+                        searchBtn.disabled = true;
+                        nameInput.placeholder = "Searching...";
+                        nameInput.value = ''; // clear previous value
+                        
+                        // Call the Laravel API route
+                        fetch(`{{ url('/api/search-mrn') }}?mrn=${mrn}`)
+                        .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    nameInput.value = data.patient_name;
+                                } else {
+                                    nameInput.placeholder = "No record found. Type manually.";
+                                    alert("No previous record found for this MRN.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching MRN:', error);
+                                nameInput.placeholder = "Error fetching data";
+                            })
+                            .finally(() => {
+                                searchBtn.innerHTML = originalIcon;
+                                searchBtn.disabled = false;
+                            });
+                    } else {
+                        alert("Please enter an MRN to search.");
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

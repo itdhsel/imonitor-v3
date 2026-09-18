@@ -80,4 +80,27 @@ class MonitorController extends Controller
 
         return redirect()->route('monitor.index')->with('success', 'Patient record deleted successfully.');
     }
+
+    public function searchMrn(Request $request)
+    {
+        $mrn = $request->query('mrn');
+        
+        if (!$mrn) {
+            return response()->json(['success' => false]);
+        }
+
+        // Search the patientlist table
+        $patient = \Illuminate\Support\Facades\DB::table('patientlist')
+            ->where('mrn', $mrn)
+            ->first();
+
+        if ($patient) {
+            return response()->json([
+                'success' => true, 
+                'patient_name' => $patient->patient_name 
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
 }
