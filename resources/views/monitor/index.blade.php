@@ -34,15 +34,19 @@
                     <div class="card-body bg-white rounded">
                         <form action="{{ route('monitor.index') }}" method="GET" class="row g-3 align-items-end m-0">
                             
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold small mb-1 text-primary">📅 Filter by Date Range</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light border-secondary">From</span>
-                                    <input type="date" name="start_date" class="form-control border-secondary" value="{{ request('start_date', date('Y-m-d')) }}">
-                                    <span class="input-group-text bg-light border-secondary">To</span>
-                                    <input type="date" name="end_date" class="form-control border-secondary" value="{{ request('end_date', date('Y-m-d')) }}">
-                                </div>
+                        <!-- Date Range -->
+                        <div class="col-md-5">
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label fw-bold small mb-0 text-primary">📅 Filter by Date Range</label>
+                                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" style="font-size: 0.75rem;" onclick="setToday()">Set Today</button>
                             </div>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-secondary">From</span>
+                                <input type="date" id="start_date" name="start_date" class="form-control border-secondary" value="{{ request('start_date', date('Y-m-d')) }}">
+                                <span class="input-group-text bg-light border-secondary">To</span>
+                                <input type="date" id="end_date" name="end_date" class="form-control border-secondary" value="{{ request('end_date', date('Y-m-d')) }}">
+                            </div>
+                        </div>
                             
                             <div class="col-md-5">
                                 <label class="form-label fw-bold small mb-1 text-primary">🏥 Filter by Ward</label>
@@ -340,6 +344,18 @@
         upButton.onclick = function() {
             window.scrollTo({top: 0, behavior: 'smooth'});
         };
+
+        // 3. Date Range "Today" Button Logic
+        function setToday() {
+            let d = new Date();
+            let year = d.getFullYear();
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let day = String(d.getDate()).padStart(2, '0');
+            let todayString = `${year}-${month}-${day}`;
+            
+            document.getElementById('start_date').value = todayString;
+            document.getElementById('end_date').value = todayString;
+        }
     </script>
 </body>
 </html>
